@@ -94,6 +94,15 @@ Matrix2D* element_mult(Matrix2D* A, Matrix2D* B) {
     return result;
 }
 
+Matrix2D* element_add(Matrix2D* A, Matrix2D* B) {
+    Matrix2D* result = matrix_init(A->r, A->c);
+    for (int i = 0; i < A->r; i++){
+        for (int j = 0; j < A->c; j++) {
+            result->data[i][j] = A->data[i][j] + B->data[0][j];
+        }
+    }
+}
+
 // matrix dot product
 Matrix2D* matmul(Matrix2D* A, Matrix2D* B) {
     if (A->c != B->r) {
@@ -113,9 +122,14 @@ Matrix2D* matmul(Matrix2D* A, Matrix2D* B) {
     return result;
 }
 
+Matrix2D* forwardprop(Matrix2D* input, Matrix2D* weights, Matrix2D* bias) {
+    Matrix2D* output = matmul(input, weights);
+    output = element_add(output, bias);
+    return output;
+}
+
 // Matrix2D backprop(Matrix2D* input, Matrix2D* weights, Matrix2D* output_error, double learning_rate) {
 //     matmul(output_error, t(weights));
-
 // }
 
 int main(int argc, char** argv) {
