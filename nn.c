@@ -77,6 +77,15 @@ Matrix2D* t(Matrix2D* A) {
     return transpose;   
 }
 
+// Multiply A by val in place
+void mult_scalar(Matrix2D* A, double val) {
+    for (int i = 0; i < A->r; i++){
+        for (int j = 0; j < A->c; j++) {
+            A->data[i][j] = A->data[i][j]  * val;
+        }        
+    }
+}
+
 // element-wise matrix multiplication
 Matrix2D* element_mult(Matrix2D* A, Matrix2D* B) {
     if (A->r != B->r || A->c != B->c) {
@@ -101,6 +110,8 @@ Matrix2D* element_add(Matrix2D* A, Matrix2D* B) {
             result->data[i][j] = A->data[i][j] + B->data[0][j];
         }
     }
+
+    return result;
 }
 
 // matrix dot product
@@ -128,9 +139,18 @@ Matrix2D* forwardprop(Matrix2D* input, Matrix2D* weights, Matrix2D* bias) {
     return output;
 }
 
-// Matrix2D backprop(Matrix2D* input, Matrix2D* weights, Matrix2D* output_error, double learning_rate) {
-//     matmul(output_error, t(weights));
-// }
+Matrix2D* backprop(Matrix2D* input, Matrix2D* weights, Matrix2D* bias, Matrix2D* output_error, double learning_rate) {
+    Matrix2D* input_error = matmul(output_error, t(weights));
+    Matrix2D* weights_error = matmul(t(input), output_error);
+
+    mult_scalar(weights_error, learning_rate);
+    mult_scalar(output_error, learning_rate);
+
+    weights = weights_error;
+    bias = output_error;
+    
+    return input_error;
+}
 
 int main(int argc, char** argv) {
     Matrix2D* A = init_with(1, 2, ones);
